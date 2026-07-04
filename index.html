@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome (Weather Icons) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ================= HEADER ================= -->
+
+        <header>
+            <h1>🌤 Weather App</h1>
+            <p>Check the weather of any city in the world.</p>
+        </header>
+
+        <!-- ================= SEARCH ================= -->
+
+        <section class="search-section">
+
+            <input
+                type="text"
+                id="cityInput"
+                placeholder="Enter city name..."
+            >
+
+            <button id="searchBtn">
+                Search
+            </button>
+
+        </section>
+
+        <!-- ================= LOADING ================= -->
+
+        <div class="loading hidden">
+            <p>Loading...</p>
+        </div>
+
+        <!-- ================= ERROR ================= -->
+
+        <div class="error hidden">
+            <p>City not found.</p>
+        </div>
+
+        <!-- ================= CURRENT WEATHER ================= -->
+
+        <section class="weather-card">
+
+            <div class="weather-icon">
+                <img id="weatherIcon" src="" alt="Weather Icon">
+            </div>
+
+            <h2 id="cityName">City Name</h2>
+
+            <h1 id="temperature">0°C</h1>
+
+            <p id="description">Weather Description</p>
+
+            <div class="weather-details">
+
+                <div class="detail-box">
+                    <i class="fa-solid fa-droplet"></i>
+                    <h3>Humidity</h3>
+                    <p id="humidity">0%</p>
+                </div>
+
+                <div class="detail-box">
+                    <i class="fa-solid fa-wind"></i>
+                    <h3>Wind Speed</h3>
+                    <p id="windSpeed">0 km/h</p>
+                </div>
+
+                <div class="detail-box">
+                    <i class="fa-solid fa-temperature-half"></i>
+                    <h3>Feels Like</h3>
+                    <p id="feelsLike">0°C</p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ================= TEMPERATURE TOGGLE ================= -->
+
+        <section class="temperature-toggle">
+
+            <button id="celsiusBtn" class="active">
+                °C
+            </button>
+
+            <button id="fahrenheitBtn">
+                °F
+            </button>
+
+        </section>
+
+        <!-- ================= FORECAST ================= -->
+
+        <section class="forecast">
+
+            <h2>5-Day Forecast</h2>
+
+            <div id="forecastContainer">
+
+                <!-- Forecast cards will be added by JavaScript -->
+
+            </div>
+
+        </section>
+
+        <!-- ================= RECENT SEARCHES ================= -->
+
+        <section class="recent-searches">
+
+            <h2>Recent Searches</h2>
+
+            <ul id="historyList">
+
+                <!-- Search history will appear here -->
+
+            </ul>
+
+        </section>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>
