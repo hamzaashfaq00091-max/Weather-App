@@ -35,6 +35,9 @@ const CURRENT_WEATHER_URL =
 const FORECAST_URL =
 `https://api.openweathermap.org/data/2.5/forecast`;
 
+    let SearchHistory=[];
+
+
 searchBtn.addEventListener("click",function(){
 
     const city=cityInput.value.trim();
@@ -77,6 +80,9 @@ async function getWeather(city){
 
          DisplayWeather(data);
          getForecast(city);
+
+         savesearch(city);
+         displayHistory()
          console.log("City:", data.name);
 console.log("Temperature:", data.main.temp);
 console.log("Humidity:", data.main.humidity);
@@ -178,5 +184,46 @@ function DisplayForecast(data){
         forecastContainer.appendChild(card);
 
     });
+};
 
-}
+
+    function savesearch(city){
+
+        if(SearchHistory.includes(city)){
+            return;
+        }
+
+        SearchHistory.push(city);
+
+        localStorage.setItem(
+            "WeatherHistory",
+            JSON.stringify(SearchHistory)
+        );
+
+    }
+
+
+    function loadHistory(){
+        const storedhistory=localStorage.getItem("WeatherHistory");
+
+        if(storedhistory){
+            SearchHistory=JSON.parse(storedhistory);
+            displayHistory();
+        }
+    }
+
+    function displayHistory(){
+
+        historyList.innerHTML="";
+
+        SearchHistory.forEach(city=>{
+            const li = document.createElement("li");
+            li.textContent=city;
+             li.addEventListener("click",()=>{
+                cityInput.value=city;
+                getWeather(city);
+             })
+             historyList.appendChild(li);
+        })
+    };
+    loadHistory();
