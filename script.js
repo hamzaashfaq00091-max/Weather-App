@@ -27,33 +27,36 @@ const fahrenheitBtn = document.getElementById("fahrenheitBtn");
 
 // api configuration
 
-const API_KEY="277f1aac6d1ab06e62c4d743786d4603";
+const API_KEY = "277f1aac6d1ab06e62c4d743786d4603";
 
 const CURRENT_WEATHER_URL =
-`https://api.openweathermap.org/data/2.5/weather`;
+    `https://api.openweathermap.org/data/2.5/weather`;
 
 const FORECAST_URL =
-`https://api.openweathermap.org/data/2.5/forecast`;
-
-    let SearchHistory=[];
+    `https://api.openweathermap.org/data/2.5/forecast`;
 
 
-searchBtn.addEventListener("click",function(){
+let currentWeatherData = null;
+let currentunit = "C";
+let SearchHistory = [];
 
-    const city=cityInput.value.trim();
 
-    if(city===""){
+searchBtn.addEventListener("click", function () {
+
+    const city = cityInput.value.trim();
+
+    if (city === "") {
         alert("Please enter a city name.");
         return;
     }
     getWeather(city);
 
-    cityInput.value="";
+    cityInput.value = "";
 });
 
-cityInput.addEventListener("keypress", function(event){
+cityInput.addEventListener("keypress", function (event) {
 
-    if(event.key === "Enter"){
+    if (event.key === "Enter") {
 
         searchBtn.click();
 
@@ -61,95 +64,95 @@ cityInput.addEventListener("keypress", function(event){
 
 });
 
-async function getWeather(city){
+async function getWeather(city) {
 
     loading.classList.remove("hidden");
     error.classList.add("hidden");
 
-    try{
-         const url = `${ CURRENT_WEATHER_URL}?q=${city}&appid=${API_KEY}&units=metric`;
+    try {
+        const url = `${CURRENT_WEATHER_URL}?q=${city}&appid=${API_KEY}&units=metric`;
 
-         const response=await fetch(url);
+        const response = await fetch(url);
 
-         const data= await response.json();
+        const data = await response.json();
 
-         if(data.cod!=200){
+        if (data.cod != 200) {
             error.classList.remove("hidden");
             return;
-         }
+        }
 
-         DisplayWeather(data);
-         getForecast(city);
+        DisplayWeather(data);
+        getForecast(city);
 
-         savesearch(city);
-         displayHistory()
-         console.log("City:", data.name);
-console.log("Temperature:", data.main.temp);
-console.log("Humidity:", data.main.humidity);
-console.log("Feels Like:", data.main.feels_like);
-console.log("Wind Speed:", data.wind.speed);
-console.log("Description:", data.weather[0].description);
-console.log("Icon:", data.weather[0].icon);
+        savesearch(city);
+        displayHistory()
+        currentWeatherData = data;
+        console.log("City:", data.name);
+        console.log("Temperature:", data.main.temp);
+        console.log("Humidity:", data.main.humidity);
+        console.log("Feels Like:", data.main.feels_like);
+        console.log("Wind Speed:", data.wind.speed);
+        console.log("Description:", data.weather[0].description);
+        console.log("Icon:", data.weather[0].icon);
     }
 
-  catch(err){
+    catch (err) {
 
-    console.error("Error fetching weather data:", err);
+        console.error("Error fetching weather data:", err);
 
-    error.classList.remove("hidden");
+        error.classList.remove("hidden");
 
-}
-    finally{
+    }
+    finally {
         loading.classList.add("hidden");
     }
 
 }
 
 
-function DisplayWeather(data){
+function DisplayWeather(data) {
 
     cityName.textContent = data.name;
 
-    temperature.textContent =
-    `${Math.round(data.main.temp)}°C`;
+    currentWeatherData = data;
+
+    updateTemperature();
 
     description.textContent =
-    data.weather[0].description;
+        data.weather[0].description;
 
     humidity.textContent =
-    `${data.main.humidity}%`;
+        `${data.main.humidity}%`;
 
     windSpeed.textContent =
-    `${(data.wind.speed * 3.6).toFixed(1)} km/h`;
+        `${(data.wind.speed * 3.6).toFixed(1)} km/h`;
 
-    feelsLike.textContent =
-    `${Math.round(data.main.feels_like)}°C`;
 
     const icon = data.weather[0].icon;
 
     weatherIcon.src =
-    `https://openweathermap.org/img/wn/${icon}@2x.png`;
+        `https://openweathermap.org/img/wn/${icon}@2x.png`;
 
     weatherIcon.alt =
-    data.weather[0].description;
+        data.weather[0].description;
 
 }
 
-async function getForecast(city){
-    try{
+async function getForecast(city) {
+    try {
         const url = `${FORECAST_URL}?q=${city}&appid=${API_KEY}&units=metric`;
-        const response=await fetch(url);
-        const data=await response.json();
+        const response = await fetch(url);
+        const data = await response.json();
         console.log(data);
         DisplayForecast(data);
     }
-    catch(err){
+    catch (err) {
         console.log(err);
     }
 }
 
 
-function DisplayForecast(data){
+function DisplayForecast(data) {
 
     forecastContainer.innerHTML = "";
 
@@ -166,14 +169,14 @@ function DisplayForecast(data){
         const date = new Date(day.dt_txt);
 
         const dayName =
-        date.toLocaleDateString("en-US", {
-            weekday: "short"
-        });
+            date.toLocaleDateString("en-US", {
+                weekday: "short"
+            });
 
         const icon = day.weather[0].icon;
 
         const temp =
-        Math.round(day.main.temp);
+            Math.round(day.main.temp);
 
         card.innerHTML = `
             <h3>${dayName}</h3>
@@ -187,43 +190,85 @@ function DisplayForecast(data){
 };
 
 
-    function savesearch(city){
+function savesearch(city) {
 
-        if(SearchHistory.includes(city)){
-            return;
-        }
-
-        SearchHistory.push(city);
-
-        localStorage.setItem(
-            "WeatherHistory",
-            JSON.stringify(SearchHistory)
-        );
-
+    if (SearchHistory.includes(city)) {
+        return;
     }
 
+    SearchHistory.push(city);
 
-    function loadHistory(){
-        const storedhistory=localStorage.getItem("WeatherHistory");
+    localStorage.setItem(
+        "WeatherHistory",
+        JSON.stringify(SearchHistory)
+    );
 
-        if(storedhistory){
-            SearchHistory=JSON.parse(storedhistory);
-            displayHistory();
-        }
+}
+
+
+function loadHistory() {
+    const storedhistory = localStorage.getItem("WeatherHistory");
+
+    if (storedhistory) {
+        SearchHistory = JSON.parse(storedhistory);
+        displayHistory();
     }
+}
 
-    function displayHistory(){
+function displayHistory() {
 
-        historyList.innerHTML="";
+    historyList.innerHTML = "";
 
-        SearchHistory.forEach(city=>{
-            const li = document.createElement("li");
-            li.textContent=city;
-             li.addEventListener("click",()=>{
-                cityInput.value=city;
-                getWeather(city);
-             })
-             historyList.appendChild(li);
+    SearchHistory.forEach(city => {
+        const li = document.createElement("li");
+        li.textContent = city;
+        li.addEventListener("click", () => {
+            cityInput.value = city;
+            getWeather(city);
         })
-    };
-    loadHistory();
+        historyList.appendChild(li);
+    })
+};
+loadHistory();
+
+
+function celsiusToFahrenheit(temp) {
+    return (temp * 9 / 5) + 32;
+}
+
+celsiusBtn.addEventListener("click", () => {
+
+    currentunit = "C";
+    updateTemperature();
+
+
+});
+
+fahrenheitBtn.addEventListener("click", () => {
+    currentunit = "F";
+    updateTemperature();
+})
+
+
+function updateTemperature() {
+    if (!currentWeatherData) {
+        return;
+    }
+
+    let temp = currentWeatherData.main.temp;
+    let feels = currentWeatherData.main.feels_like;
+
+    if (currentunit === "F") {
+        temp = celsiusToFahrenheit(temp);
+        feels = celsiusToFahrenheit(feels);
+
+
+        temperature.textContent = `${Math.round(temp)}°F`;
+        feelsLike.textContent = `${Math.round(feels)}°F`;
+    }
+    else {
+
+        temperature.textContent = `${Math.round(temp)}°C`;
+        feelsLike.textContent = `${Math.round(feels)}°C`;
+    }
+}
